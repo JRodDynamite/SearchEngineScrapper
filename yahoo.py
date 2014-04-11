@@ -4,40 +4,49 @@
 import mechanize
 from bs4 import BeautifulSoup
 import re
+from StringIO import StringIO
+import gzip
 
-#mechanize emulates a Browser
-br = mechanize.Browser()
-br.set_handle_robots(False)
-br.addheaders = [('User-agent','chrome')]
+def YahooResults(search,no):
+    #mechanize emulates a Browser
+    br = mechanize.Browser()
+    br.set_handle_robots(False)
+    br.addheaders = [('User-agent','chrome'),('Accept-encoding','gzip')]
 
-term = "stock market".replace(" ","+")
-query = "https://search.yahoo.com/search?q=" + term
+    term = search.replace(" ","+")
+    query = "https://search.yahoo.com/search?q=" + term + "&n=" + str(no)
 
-htmltext = br.open(query).read()
-htm = htmltext
+    if br.open(query).info().get('Content-Encoding') == 'gzip':
+        buf = StringIO(br.open(query).read())
+        f = gzip.GzipFile(fileobj=buf)
+        htmltext = f.read()
 
-soup = BeautifulSoup(htm)
-#Since all results are located in the ol tag
-search = soup.findAll('ol')
+    soup = BeautifulSoup(htmltext)
+    #Since all results are located in the ol tag
+    search = soup.findAll('ol')
 
-searchtext = str(search)
+    searchtext = str(search)
 
-#Using BeautifulSoup to parse the HTML source
-soup1 = BeautifulSoup(searchtext)
-#Each search result is contained within div tag
-list_items = soup1.findAll('div', attrs={'class':'res'})
-#Each description is contained
+    #Using BeautifulSoup to parse the HTML source
+    soup1 = BeautifulSoup(searchtext)
+    #Each search result is contained within div tag
+    list_items = soup1.findAll('div', attrs={'class':'res'})
+    #Each description is contained
 
-for li in list_items:
-    list_item = str(li)
-    title = ""
-    soup2 = BeautifulSoup(list_item)
-    link = soup2.findAll('a')
-    desc = soup2.findAll('div')
-    print link[0].get('href')
-    for c in link[0].contents:
-        title += c.encode('utf-8')
-    print title.decode('utf-8').replace("<wbr></wbr>","")
-    d = desc[-1]
-    print str(d).split("\">")[1].replace("</div>","").decode('utf-8')
-    print ""
+    Yahoo_Result = {}
+
+    for li in list_items:
+        list_item = str(li)
+        title = ""
+        soup2 = BeautifulSoup(list_item)
+        link = soup2.findAll('a')
+        desc = soup2.findAll('div')
+        for c in link[0].contents:
+            title += c.encode('utf-8')
+        d = desc[-1]
+        Yahoo_Result[link[0].get('href')] = {
+            'title': title.decode('utf-8').replace("<wbr></wbr>",""),
+            'desc': str(d).split("\">")[1].replace("</div>","").decode('utf-8')
+            }
+
+    return Yahoo_Result
