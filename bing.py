@@ -19,17 +19,17 @@ def BingResults(search,no):
 
     soup = BeautifulSoup(htmltext)
     #Since all results are located in the div tag containing the id='results'
-    search = soup.findAll('div',attrs={'id':'results'})
+    search = soup.findAll('ol',attrs={'id':'b_results'})
 
     searchtext = str(search[0])
 
     #Using BeautifulSoup to parse the HTML source
     soup1 = BeautifulSoup(searchtext)
     #Each search result is contained within div tag
-    list_items = soup1.findAll('div', attrs={'class':'sa_mc'})
+    list_items = soup1.findAll('li', attrs={'class':'b_algo'})
 
     Bing_Result = {}
-    no-=2
+    no-=1
 
     for li in list_items:
         title = ""
