@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import mechanize
-import urllib
 from bs4 import BeautifulSoup
 import re
 
@@ -30,6 +29,7 @@ def BingResults(search,no):
     list_items = soup1.findAll('div', attrs={'class':'sa_mc'})
 
     Bing_Result = {}
+    no-=2
 
     for li in list_items:
         title = ""
@@ -37,9 +37,11 @@ def BingResults(search,no):
         link = soup2.findAll('a')
         for c in link[0].contents:
             title += c.encode('utf-8')
-        Bing_Result[link[0].get('href')] = {
-            'title' : title.decode('utf-8'),
-            'desc' : str(soup2.findAll('p')[0]).replace("<p>","").replace("</p>","")
+        Bing_Result[str(link[0].get('href'))] = {
+            'title' : str(title),
+            'desc' : str(soup2.findAll('p')[0]).replace("<p>","").replace("</p>",""),
+            'BRank' : no
             }
+        no-=1
 
     return Bing_Result

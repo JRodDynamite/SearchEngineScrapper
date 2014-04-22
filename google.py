@@ -42,6 +42,7 @@ def GoogleResults(search,no):
     ##dpattern = re.compile(dregex)
 
     Google_Result = {}
+    
 
     for li in list_items:
         soup2 = BeautifulSoup(str(li))
@@ -52,14 +53,10 @@ def GoogleResults(search,no):
         source_title = re.findall(tpattern,str(title))
         if len(source_url)>0:
             Google_Result[source_url[0].replace("/url?q=","").replace("&amp","")] = {
-                'title': source_title[0].replace("\">","").replace("</a>","").decode('utf-8'),
-                'desc': str(desc[0]).replace("<span class=\"st\">","").replace("</span>","").decode('utf-8')
+                'title': str(source_title[0].replace("\">","").replace("</a>","")),
+                'desc': str(desc[0]).replace("<span class=\"st\">","").replace("</span>",""),
+                'GRank': no
                 }
-##            source_url[0] = source_url[0].replace("/url?q=","").replace("&amp","")
-##            source_title[0] = source_title[0].replace("\">","").replace("</a>","")
-##            desc[0] = str(desc[0]).replace("<span class=\"st\">","").replace("</span>","")
-##            print str(source_url[0]).decode('utf-8')
-##            print str(source_title[0]).decode('utf-8')
-##            print str(desc[0]).decode('utf-8')
+            no-=1
 
     return Google_Result

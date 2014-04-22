@@ -45,8 +45,10 @@ def YahooResults(search,no):
             title += c.encode('utf-8')
         d = desc[-1]
         Yahoo_Result[link[0].get('href')] = {
-            'title': title.decode('utf-8').replace("<wbr></wbr>",""),
-            'desc': str(d).split("\">")[1].replace("</div>","").decode('utf-8')
+            'title': title.decode('utf-8').replace("<wbr></wbr>","").encode('utf-8'),
+            'desc': str(d).split("\">")[1].replace("</div>",""),
+            'YRank': no
             }
+        no-=1
 
     return Yahoo_Result
